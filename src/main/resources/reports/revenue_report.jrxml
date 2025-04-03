@@ -1,0 +1,50 @@
+<!-- Created with Jaspersoft Studio version 7.0.1.final using JasperReports Library version 7.0.1-573496633c2b4074e32f433154b543003f7d2498  -->
+<jasperReport name="enhanced_revenue_report" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5c3cf9e0-2e86-44d4-9073-504523d40de5">
+    <parameter name="REPORT_TITLE" class="java.lang.String"/>
+    <parameter name="totalRevenue" class="java.lang.Double"/>
+    <title>
+        <element kind="rectangle" uuid="0b41aa60-0e37-4106-96b7-3eb1a1803765" x="0" y="0" width="555" height="60" backcolor="#3498DB"/>
+        <element kind="staticText" uuid="ebe397fe-b1e1-46eb-924c-f54a0a158e95" x="0" y="15" width="555" height="30" forecolor="#FFFFFF" fontSize="20.0" bold="true" hTextAlign="Center">
+            <text><![CDATA[Revenue Report]]></text>
+        </element>
+    </title>
+    <detail>
+        <band height="40">
+            <element kind="staticText" uuid="dcc2b8e7-f184-4f69-a8ab-de40b1ca29d2" x="0" y="0" width="150" height="20" backcolor="#F39C12" bold="true">
+                <text><![CDATA[Total Revenue:]]></text>
+            </element>
+            <element kind="textField" uuid="963e4e3c-ac9f-453c-b41b-5629a3a639ab" x="160" y="0" width="200" height="20">
+                <expression><![CDATA["$" + $P{totalRevenue}]]></expression>
+            </element>
+        </band>
+        <band height="30">
+            <element kind="rectangle" uuid="710a5a13-8dbb-4b98-a798-b87cc33e834b" x="0" y="0" width="555" height="30" backcolor="#2ECC71"/>
+            <element kind="staticText" uuid="728f514c-6bcf-4ad2-947d-ad8ff0815b72" x="0" y="5" width="555" height="20" forecolor="#FFFFFF" bold="true" hTextAlign="Center">
+                <text><![CDATA[Top Selling Products]]></text>
+            </element>
+        </band>
+        <band height="25">
+            <element kind="rectangle" uuid="39fff1dc-0d9b-4a6f-8eae-d266e650a293" x="0" y="0" width="555" height="25" backcolor="#95A5A6"/>
+            <element kind="staticText" uuid="625f3300-815c-439e-bb24-eeed91be62b1" x="0" y="0" width="100" height="20" forecolor="#FFFFFF">
+                <text><![CDATA[Product]]></text>
+            </element>
+            <element kind="staticText" uuid="1aa66460-94cc-458f-a3c5-4493b421aef9" x="100" y="0" width="100" height="20" forecolor="#FFFFFF">
+                <text><![CDATA[Quantity]]></text>
+            </element>
+            <element kind="staticText" uuid="0d6b2de7-b246-422b-aa0a-40d51d88f945" x="200" y="0" width="100" height="20" forecolor="#FFFFFF">
+                <text><![CDATA[Revenue]]></text>
+            </element>
+        </band>
+        <band height="20">
+            <element kind="textField" uuid="7127bfa5-5305-475f-afdf-c60a3f8d5869" x="0" y="0" width="100" height="20">
+                <expression><![CDATA[$F{productName}]]></expression>
+            </element>
+            <element kind="textField" uuid="870c5ce1-7d93-4ef8-91c8-e8deee11c9d9" x="100" y="0" width="100" height="20">
+                <expression><![CDATA[$F{totalQuantity}]]></expression>
+            </element>
+            <element kind="textField" uuid="77098c54-bd5e-4a1b-a5ac-0eda6bd1bd37" x="200" y="0" width="100" height="20">
+                <expression><![CDATA["$" + $F{totalRevenue}]]></expression>
+            </element>
+        </band>
+    </detail>
+</jasperReport>
