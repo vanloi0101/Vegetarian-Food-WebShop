@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.UnsupportedEncodingException;
 
 @RestController
-@RequestMapping("/payment")
+@RequestMapping("/api/v1/payment")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j

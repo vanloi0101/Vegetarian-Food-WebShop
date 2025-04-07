@@ -2,28 +2,34 @@ package com.devteria.identityservice.configuration;
 
 
 
+import jakarta.inject.Inject;
+import org.camunda.bpm.spring.boot.starter.property.CamundaBpmProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
+
+import java.util.Arrays;
+
 
 @Configuration
-@EnableWebSecurity
-@EnableMethodSecurity
+//@EnableWebSecurity
+//@EnableMethodSecurity
 public class SecurityConfig {
+    @Inject
+    private CamundaBpmProperties camundaBpmProperties;
 
     private final String[] PUBLIC_ENDPOINTS = {
             "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
@@ -35,34 +41,50 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        String path = camundaBpmProperties.getWebapp().getApplicationPath();
+        return http
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers(new AntPathRequestMatcher(path + "/api/**"), new AntPathRequestMatcher("/engine-rest/**")))
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers("/orders/**").hasRole("USER")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/camunda/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/engine-rest/**"))
+                        .permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/**"))
+                        .permitAll()
+                        .requestMatchers(new AntPathRequestMatcher(
+                                "http://localhost:5173/spin/play/**"))
+                        .permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/checkin", "POST"))
+                        .permitAll()
+                        .anyRequest().permitAll()
                 )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
                                 .decoder(customJwtDecoder)
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
                         )
-                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-                );
-        return http.build();
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
+                .build();
+
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000");
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:8080"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        corsConfiguration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        corsConfiguration.setExposedHeaders(Arrays.asList("Authorization"));
+        corsConfiguration.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", corsConfiguration);
+
         return source;
     }
 

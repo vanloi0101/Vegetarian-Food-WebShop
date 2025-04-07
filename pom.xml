@@ -15,6 +15,8 @@
 	<description>VeggieFood - Online Vegetarian Food Ordering Platform</description>
 	<properties>
 		<java.version>21</java.version>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 		<projectlombok-lombok.version>1.18.30</projectlombok-lombok.version>
 		<mapstruct.version>1.5.5.Final</mapstruct.version>
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
@@ -94,12 +96,42 @@
 		<dependency>
 			<groupId>org.camunda.bpm.springboot</groupId>
 			<artifactId>camunda-bpm-spring-boot-starter</artifactId>
-			<version>${camunda.version}</version>
+			<version>7.22.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.camunda.bpm.springboot</groupId>
 			<artifactId>camunda-bpm-spring-boot-starter-rest</artifactId>
-			<version>${camunda.version}</version>
+			<version>7.22.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.camunda.bpm.springboot</groupId>
+			<artifactId>camunda-bpm-spring-boot-starter-webapp</artifactId>
+			<version>7.22.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.camunda.bpm</groupId>
+			<artifactId>camunda-engine-plugin-spin</artifactId>
+			<version>7.22.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.camunda.spin</groupId>
+			<artifactId>camunda-spin-dataformat-all</artifactId>
+			<version>7.22.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.camunda.bpm.extension</groupId>
+			<artifactId>camunda-platform-7-keycloak</artifactId>
+			<version>7.22.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.camunda.bpm.extension</groupId>
+			<artifactId>camunda-platform-7-keycloak-jwt</artifactId>
+			<version>7.22.0</version>
 		</dependency>
 
 		<!-- JasperReports -->
@@ -147,6 +179,7 @@
 			<artifactId>mysql</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

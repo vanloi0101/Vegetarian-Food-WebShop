@@ -8,13 +8,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PaymentService {
 
     @Value("${vnpay.tmnCode:WQLVBKW6}")
@@ -32,6 +33,7 @@ public class PaymentService {
     @Value("${vnpay.apiUrl:https://sandbox.vnpayment.vn/merchant_webapi/api/transaction}")
     String apiUrl;
 
+    @Autowired
     OrderRepository orderRepository;
 
     public String createPaymentUrl(Long orderId) {

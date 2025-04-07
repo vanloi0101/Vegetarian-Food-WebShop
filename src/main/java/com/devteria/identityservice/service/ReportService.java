@@ -1,6 +1,7 @@
 package com.devteria.identityservice.service;
 
 import com.devteria.identityservice.dto.request.ReportRequest;
+import com.devteria.identityservice.dto.response.ProductSales;
 import com.devteria.identityservice.dto.response.ReportResponse;
 import com.devteria.identityservice.repository.OrderRepository;
 import lombok.AccessLevel;
@@ -8,9 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -30,14 +31,22 @@ public class ReportService {
         );
 
         // Lấy top sản phẩm với Pageable
-        List<ReportResponse.ProductSales> topProducts = orderRepository.findTopProductsBetweenDates(
+        List<ProductSales> topProducts = orderRepository.findTopProductsBetweenDates(
                 request.getStartDate(),
                 request.getEndDate(),
-                (Pageable) PageRequest.of(0, 5) // Giới hạn 5 kết quả (tương đương LIMIT 5)
-        );
+                PageRequest.of(0, 5)); // Giới hạn 5 kết quả (tương đương LIMIT 5)
 
         return ReportResponse.builder()
                 .totalRevenue(totalRevenue)
+                .topProducts(topProducts)
+                .build();
+    }
+
+    public ReportResponse generateReport(LocalDate start, LocalDate end) {
+        Double revenue = orderRepository.calculateRevenueBetweenDates(start, end);
+        List<ProductSales> topProducts = orderRepository.findTopProductsBetweenDates(start, end, PageRequest.of(0, 5));
+        return ReportResponse.builder()
+                .totalRevenue(revenue)
                 .topProducts(topProducts)
                 .build();
     }

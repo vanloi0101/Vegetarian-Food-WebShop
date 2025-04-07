@@ -1,7 +1,7 @@
 package com.devteria.identityservice.repository;
 
+import com.devteria.identityservice.dto.response.ProductSales;
 import com.devteria.identityservice.entity.Order;
-import com.devteria.identityservice.dto.response.ReportResponse.ProductSales;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,7 +18,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.createdAt BETWEEN :startDate AND :endDate AND o.status = 'COMPLETED'")
     Double calculateRevenueBetweenDates(LocalDate startDate, LocalDate endDate);
 
-    @Query("SELECT new com.devteria.identityservice.dto.response.ReportResponse.ProductSales(od.product.id, od.product.name, SUM(od.quantity), SUM(od.subtotal)) " +
+    @Query("SELECT new com.devteria.identityservice.dto.response.ProductSales(" +
+            "od.product.id, od.product.name, SUM(od.quantity), SUM(od.subtotal)) " +
             "FROM OrderDetail od JOIN od.order o " +
             "WHERE o.createdAt BETWEEN :startDate AND :endDate AND o.status = 'COMPLETED' " +
             "GROUP BY od.product.id, od.product.name " +

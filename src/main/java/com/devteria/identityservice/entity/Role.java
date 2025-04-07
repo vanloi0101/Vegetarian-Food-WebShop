@@ -2,26 +2,30 @@ package com.devteria.identityservice.entity;
 
 import java.util.Set;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-
+import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class Role {
     @Id
-    String name;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Hoặc UUID tùy theo cách bạn dùng
+    Long id;
 
+    String name;
     String description;
 
     @ManyToMany
-    Set<Permission> permissions;
+    @JoinTable(
+            name = "role_permissions", // Tên bảng trung gian
+            joinColumns = @JoinColumn(name = "role_id"), // Khóa ngoại của bảng Role
+            inverseJoinColumns = @JoinColumn(name = "permission_id") // Khóa ngoại của bảng Permission
+    )
+    Set<Permission> permissions;  // Quan hệ với bảng Permission
 }
+
+

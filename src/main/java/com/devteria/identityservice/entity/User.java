@@ -28,6 +28,11 @@ public class User {
     LocalDate dob;
     String lastName;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",  // Bảng trung gian
+            joinColumns = @JoinColumn(name = "user_id"),  // Cột tham chiếu User
+            inverseJoinColumns = @JoinColumn(name = "role_id")  // Cột tham chiếu Role
+    )
     Set<Role> roles;
 }

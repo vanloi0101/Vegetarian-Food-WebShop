@@ -35,7 +35,6 @@ public class OrderService {
     ProductRepository productRepository;
     UserRepository userRepository;
     OrderMapper orderMapper;
-    CamundaService camundaService;
     EmailService emailService;
 
     @Transactional
@@ -86,8 +85,8 @@ public class OrderService {
         order.setOrderDetails(orderDetails); // Cập nhật danh sách vào order
         orderRepository.save(order); // Lưu lại order với orderDetails
 
-        // Start Camunda workflow
-        camundaService.startOrderProcess(order);
+//        // Start Camunda workflow
+//        camundaService.startOrderProcess(order);
 
         // Send email confirmation
         emailService.sendOrderConfirmationEmail(user.getUsername(), order);

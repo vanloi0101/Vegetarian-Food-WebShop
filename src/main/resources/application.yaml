@@ -1,14 +1,17 @@
 server:
   port: 8080
-  servlet:
-    context-path: /identity
 
 spring:
   datasource:
-    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/VeggieFood?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
-    driverClassName: "com.mysql.cj.jdbc.Driver"
-    password: ${DBMS_PASSWORD:9113}
-    username: ${DBMS_USERNAME:root}
+    url: jdbc:mysql://localhost:3306/VeggieFood?useUnicode=true&characterEncoding=UTF-8
+    password: 9113
+    username: root
+    driverClassName: com.mysql.cj.jdbc.Driver
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
   jpa:
     hibernate:
       ddl-auto: update
@@ -16,6 +19,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+        id: new_generator_mappings=true
   mail: # Sửa: đặt trực tiếp dưới "spring"
     host: smtp.gmail.com
     port: 587
@@ -36,14 +40,40 @@ jwt:
 # Cấu hình Camunda
 camunda:
   bpm:
-    auto-deployment-enabled: true
     admin-user:
       id: admin
       password: admin
+    rest:
+      enabled: true
+      engine-name: default
     filter:
       create: All tasks
-    database:
-      schema-update: true
+    history-level: full
+    run:
+      cors:
+        enabled: true
+        allowed-origins: "localhost:3000"
+        allowed-methods: "GET, POST, PUT, DELETE"
+    # webapp:
+    #   security:
+    #     enabled: true
+    #     provider: keycloak
+
+    # url: http://localhost:8899/engine-rest
+    # identity:
+    #   keycloak:
+    #     enabled: true
+    #     server-url: http://localhost:8081/realms/spin-wheel
+    #     client-id: spinpj-rest-api
+    #     use-username-as-principal: true
+    # database:
+    #   schema-update: true # Tự động cập nhật schema khi khởi động
+    deployment-resource-pattern: classpath*:processes/*.bpmn
+logging:
+  level:
+    org.camunda: DEBUG
+    org.springframework.web: DEBUG
+
 
 # Cấu hình JWT
 
