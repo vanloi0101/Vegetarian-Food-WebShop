@@ -3,6 +3,8 @@ package com.devteria.identityservice.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -12,6 +14,6 @@ public class OrderDetailResponse {
     Long productId;
     String productName;
     Integer quantity;
-    Double unitPrice;
-    Double subtotal;
+    BigDecimal unitPrice;
+    BigDecimal subtotal;
 }

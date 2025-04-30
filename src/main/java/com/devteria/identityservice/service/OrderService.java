@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -75,8 +76,8 @@ public class OrderService {
                     .order(order)
                     .product(product)
                     .quantity(detailRequest.getQuantity())
-                    .unitPrice(product.getPrice())
-                    .subtotal(product.getPrice() * detailRequest.getQuantity())
+                    .unitPrice(BigDecimal.valueOf(product.getPrice()))
+                    .subtotal(BigDecimal.valueOf(product.getPrice() * detailRequest.getQuantity()))
                     .createdAt(new Date())
                     .build();
 

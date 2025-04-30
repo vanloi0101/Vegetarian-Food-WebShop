@@ -3,8 +3,8 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/VeggieFood?useUnicode=true&characterEncoding=UTF-8
-    password: 9113
+    url: jdbc:mysql://localhost:3306/VeggieFood
+    password: ""
     username: root
     driverClassName: com.mysql.cj.jdbc.Driver
   servlet:
@@ -40,6 +40,8 @@ jwt:
 # Cấu hình Camunda
 camunda:
   bpm:
+    database:
+      skip-isolation-level-check: true
     admin-user:
       id: admin
       password: admin

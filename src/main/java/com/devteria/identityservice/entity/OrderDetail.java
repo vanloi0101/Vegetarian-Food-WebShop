@@ -1,11 +1,11 @@
 package com.devteria.identityservice.entity;
 
-
-
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
@@ -15,31 +15,35 @@ import java.util.Date;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@Table(name = "order_detail")
 public class OrderDetail {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     Order order;
 
-    @Column(name = "product_name")
-    private String productName; // Đảm bảo có thuộc tính này
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     Product product;
+
+    @Column(name = "product_name", nullable = false)
+    String productName;
 
     @Column(name = "quantity", nullable = false)
     Integer quantity;
 
     @Column(name = "unit_price", nullable = false)
-    Double unitPrice;
+    BigDecimal unitPrice;
 
     @Column(name = "subtotal", nullable = false)
-    Double subtotal;
+    BigDecimal subtotal;
 
-    @Column(name = "created_at")
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", updatable = false)
     Date createdAt;
 }
