@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!--
+		Thay đổi đã áp dụng (theo yêu cầu đồng bộ Maven / package):
+		- artifactId + <name>: veggiefood → identityservice (khớp root package com.devteria.identityservice).
+		- spring-boot-starter-mail, httpclient: mỗi dependency chỉ còn một khối <dependency>.
+		- camunda.version: 7.21.x (tối thiểu 7.21.3 theo docs) — khớp Spring Boot 3.2.x; 7.22.x yêu cầu Spring Boot 3.3+.
+		- JaCoCo excludes: trỏ đúng package identityservice (một pattern com/devteria/identityservice/**).
+	-->
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.2.2</version>
+		<relativePath/>
+	</parent>
+	<groupId>com.devteria</groupId>
+	<artifactId>identityservice</artifactId>
+	<name>identityservice</name>
+	<version>0.0.1</version>
+	<description>VeggieFood - Online Vegetarian Food Ordering Platform</description>
+	<properties>
+		<java.version>21</java.version>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
+		<projectlombok-lombok.version>1.18.30</projectlombok-lombok.version>
+		<mapstruct.version>1.5.5.Final</mapstruct.version>
+		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+		<spotless.version>2.43.0</spotless.version>
+		<!-- Camunda 7.20.0 + Spring Boot 3.2.x: https://docs.camunda.org/manual/latest/user-guide/spring-boot-integration/version-compatibility/ -->
+		<camunda.version>7.20.0</camunda.version>
+		<jasperreports.version>6.21.0</jasperreports.version>
+	</properties>
+	<dependencies>
+		<!-- Để làm việc với HMAC-SHA512 -->
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+
+		<!-- Để làm việc với date/time -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.10.10</version>
+		</dependency>
+
+		<!-- HTTP client (một lần duy nhất) -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.13</version>
+		</dependency>
+
+		<!-- Spring Boot Starters -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<!-- Mail starter (một lần duy nhất) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.auth</groupId>
+			<artifactId>google-auth-library-oauth2-http</artifactId>
+			<version>1.13.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20231013</version> <!-- Fixed CVE-2022-45688 and CVE-2023-5072 -->
+		</dependency>
+
+		<!-- Security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-crypto</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>9.37.3</version> <!-- Fixed CVE-2023-52428 and CVE-2025-53864 -->
+		</dependency>
+
+		<!-- Database -->
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- H2: dùng cho dev mặc định (application.yml); test vẫn dùng chung -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Camunda: tất cả version lấy từ ${camunda.version} -->
+		<dependency>
+			<groupId>org.camunda.bpm.springboot</groupId>
+			<artifactId>camunda-bpm-spring-boot-starter</artifactId>
+			<version>${camunda.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.camunda.bpm.springboot</groupId>
+			<artifactId>camunda-bpm-spring-boot-starter-rest</artifactId>
+			<version>${camunda.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.camunda.bpm.springboot</groupId>
+			<artifactId>camunda-bpm-spring-boot-starter-webapp</artifactId>
+			<version>${camunda.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.camunda.bpm</groupId>
+			<artifactId>camunda-engine-plugin-spin</artifactId>
+			<version>${camunda.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.camunda.bpm.extension</groupId>
+			<artifactId>camunda-platform-7-keycloak</artifactId>
+			<version>${camunda.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.camunda.bpm.extension</groupId>
+			<artifactId>camunda-platform-7-keycloak-jwt</artifactId>
+			<version>${camunda.version}</version>
+		</dependency>
+
+		<!-- JasperReports -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>6.21.3</version> <!-- Fixed CVE-2025-10492 (Java deserialization vulnerability) -->
+		</dependency>
+
+		<!-- Utilities -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${projectlombok-lombok.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${mapstruct.version}</version>
+		</dependency>
+
+		<!-- Test -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>mysql</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers-bom</artifactId>
+				<version>1.19.7</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.11.0</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${projectlombok-lombok.version}</version>
+						</path>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok-mapstruct-binding</artifactId>
+							<version>${lombok-mapstruct-binding.version}</version>
+						</path>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${mapstruct.version}</version>
+						</path>
+					</annotationProcessorPaths>
+					<compilerArgs>
+						<arg>-Amapstruct.suppressGeneratorTimestamp=true</arg>
+						<arg>-Amapstruct.defaultComponentModel=spring</arg>
+						<arg>-Amapstruct.verbose=true</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.12</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- Khớp package thực tế com.devteria.identityservice (tránh path veggiefood cũ). -->
+					<excludes>
+						<exclude>com/devteria/identityservice/**</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>${spotless.version}</version>
+				<configuration>
+					<java>
+						<removeUnusedImports />
+						<toggleOffOn/>
+						<trimTrailingWhitespace/>
+						<endWithNewline/>
+						<indent>
+							<tabs>true</tabs>
+							<spacesPerTab>4</spacesPerTab>
+						</indent>
+						<palantirJavaFormat/>
+						<importOrder>
+							<order>java,jakarta,org,com,com.diffplug,</order>
+						</importOrder>
+					</java>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

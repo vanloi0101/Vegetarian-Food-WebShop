@@ -1,0 +1,37 @@
+# Cấu hình mặc định để chạy local (không cần MySQL).
+# File application.yaml của bạn (gitignored) có thể ghi đè các giá trị này nếu đặt cùng key.
+spring:
+  application:
+    name: identityservice
+  datasource:
+    url: jdbc:h2:mem:veggiedb;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: false
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  # Tránh lỗi khởi động khi chưa cấu hình SMTP (EmailService dùng Jakarta Mail trực tiếp)
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
+
+# JWT HS512: cần khóa đủ dài; đổi trên môi trường thật
+jwt:
+  signerKey: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12"
+  valid-duration: 7200
+  refreshable-duration: 72000
+
+camunda:
+  bpm:
+    admin-user:
+      id: demo
+      password: demo
+    filter:
+      create: All tasks
